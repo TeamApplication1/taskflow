@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'لوحة متابعة التكليفات - الشبكة الوطنية للطوارئ')
+@section('title', 'لوحة متابعة التكليفات - Task Flow')
 @section('page-title', 'متابعة التكليفات')
 
 @section('content')

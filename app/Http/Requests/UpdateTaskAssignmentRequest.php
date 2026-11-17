@@ -37,7 +37,7 @@ class UpdateTaskAssignmentRequest extends FormRequest
             'entity_id' => ['required', 'exists:task_entities,id'],
             'assignee_id' => ['required', 'exists:users,id'],
             'description' => ['required', 'string', 'max:5000'],
-            'priority' => ['required', 'in:عالية,متوسطة,منخفضة'],
+            'priority' => ['required', 'in:سري,عاجل,هام وعاجل,عادي'],
             'deadline' => ['required', 'date'],
             'response_date' => ['nullable', 'date'],
             'status' => ['sometimes', 'required', 'in:لم يبدأ,جاري التنفيذ,تم التنفيذ,متأخر,متوقف'],

@@ -78,7 +78,12 @@
                     <div class="space-y-1">
                         <span class="block text-sm font-black text-slate-600">الأولوية</span>
                         <span class="inline-block px-4 py-1.5 rounded-xl font-black
-                            {{ $task->priority === 'عالية' ? 'bg-red-100 text-red-700 border border-red-300' : ($task->priority === 'متوسطة' ? 'bg-yellow-100 text-yellow-700 border border-yellow-300' : 'bg-green-100 text-green-700 border border-green-300') }}">
+                            {{ match($task->priority) {
+                                'سري' => 'bg-gray-100 text-gray-700 border border-gray-300',
+                                'عاجل' => 'bg-red-100 text-red-700 border border-red-300',
+                                'هام وعاجل' => 'bg-orange-100 text-orange-700 border border-orange-300',
+                                default => 'bg-blue-100 text-blue-700 border border-blue-300',
+                            } }}">
                             {{ $task->priority }}
                         </span>
                     </div>
@@ -134,6 +139,33 @@
                     </div>
                 @endif
             </div>
+
+            {{-- التأشيرات --}}
+            @if ($task->signatures->count() > 0)
+                <div class="p-6 bg-indigo-50 rounded-2xl border border-indigo-100 space-y-4">
+                    <h4 class="font-black text-primary border-r-4 border-accent pr-3">التأشيرات</h4>
+
+                    <div class="space-y-4">
+                        @foreach ($task->signatures as $signature)
+                            <div class="p-4 bg-white rounded-xl border border-indigo-200 space-y-3">
+                                <div class="flex items-start justify-between">
+                                    <div>
+                                        <p class="font-bold text-slate-700">{{ $signature->officer?->name ?? '-' }}</p>
+                                        <p class="text-sm text-slate-500">تاريخ التأشيرة: {{ optional($signature->signature_date)->format('Y-m-d') }}</p>
+                                    </div>
+                                    <small class="text-slate-400">{{ $signature->created_at->format('Y-m-d H:i') }}</small>
+                                </div>
+                                <div class="p-3 bg-slate-50 rounded-lg">
+                                    <p class="text-slate-700 leading-relaxed whitespace-pre-line">{{ $signature->signature_text }}</p>
+                                </div>
+                                @if ($signature->note)
+                                    <p class="text-sm text-slate-600"><strong>ملاحظة:</strong> {{ $signature->note }}</p>
+                                @endif
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+            @endif
 
             @can('update', $task)
                 <div class="pt-2">

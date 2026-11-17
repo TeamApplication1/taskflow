@@ -110,9 +110,9 @@
                         <label class="block text-sm font-black text-slate-600">الأولوية <span class="text-red-500">*</span></label>
                         <select name="priority" required
                             class="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-accent/20 focus:border-accent outline-none transition-all">
-                            @foreach (['عالية', 'متوسطة', 'منخفضة'] as $p)
-                                <option value="{{ $p }}" @selected(old('priority', 'متوسطة') === $p)>{{ $p }}</option>
-                            @endforeach
+                                    @foreach (['سري', 'عاجل', 'هام وعاجل', 'عادي'] as $p)
+                                        <option value="{{ $p }}" @selected(old('priority', 'عادي') === $p)>{{ $p }}</option>
+                                    @endforeach
                         </select>
                     </div>
 

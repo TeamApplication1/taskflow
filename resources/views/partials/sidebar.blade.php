@@ -15,8 +15,8 @@
                 <img src="{{ asset('assets/imgs/watania.png') }}" alt="Logo"
                     class="w-10 h-10 bg-white p-1 rounded-full shadow-lg">
                 <div class="flex flex-col">
-                    <span class="text-xl font-bold tracking-tight whitespace-nowrap text-white">الشبكة الوطنية</span>
-                    <span class="text-[10px] font-bold text-accent">مركز سيطرة</span>
+                    <span class="text-xl font-bold tracking-tight whitespace-nowrap text-white">Task Flow</span>
+                    <span class="text-[10px] font-bold text-accent">محافظة كفر الشيخ </span>
                 </div>
             </div>
             <button id="close-sidebar" class="lg:hidden text-white text-2xl"><i class="fas fa-times"></i></button>
@@ -109,6 +109,64 @@
                 </div>
             @endcanany
 
+            {{-- 3) إدارة المستخدمين (قائمة منسدلة: المستخدمون - الأدوار والصلاحيات - الصلاحيات - الصلاحيات المباشرة) --}}
+            @canany(['users.manage', 'roles.manage'])
+                @php
+                    $usersMgmtRoutes = ['admin.users.*', 'admin.roles.*', 'admin.permissions.*', 'admin.user-permissions.*'];
+                    $isUsersMgmtActive = request()->routeIs($usersMgmtRoutes);
+                @endphp
+
+                <div>
+                    <button type="button" onclick="document.getElementById('users-mgmt-submenu').classList.toggle('hidden'); this.querySelector('.users-mgmt-chevron').classList.toggle('rotate-180')"
+                        class="w-full flex items-center justify-between gap-4 px-4 py-3 rounded-xl transition-all duration-300 group
+                            {{ $isUsersMgmtActive ? 'bg-accent text-white shadow-lg' : 'hover:bg-white/10' }}">
+                        <span class="flex items-center gap-4">
+                            <i class="fas fa-users w-6 text-center
+                                {{ $isUsersMgmtActive ? '' : 'text-accent group-hover:scale-110 transition-transform' }}"></i>
+                            <span class="font-medium text-lg">إدارة المستخدمين</span>
+                        </span>
+                        <i class="fas fa-chevron-down text-sm users-mgmt-chevron transition-transform duration-300 {{ $isUsersMgmtActive ? 'rotate-180' : '' }}"></i>
+                    </button>
+
+                    <div id="users-mgmt-submenu" class="{{ $isUsersMgmtActive ? '' : 'hidden' }} mt-1 mr-4 space-y-1 border-r-2 border-white/10 pr-4">
+                        @can('users.manage')
+                            <a href="{{ route('admin.users.index') }}"
+                                class="flex items-center gap-3 px-4 py-2 rounded-lg transition-all duration-300 text-sm
+                                    {{ request()->routeIs('admin.users.*') ? 'bg-white/15 text-white font-bold' : 'hover:bg-white/10 text-white/80' }}">
+                                <i class="fas fa-users w-5 text-center text-accent"></i>
+                                إدارة المستخدمين
+                            </a>
+                        @endcan
+
+                        @can('roles.manage')
+                            <a href="{{ route('admin.roles.index') }}"
+                                class="flex items-center gap-3 px-4 py-2 rounded-lg transition-all duration-300 text-sm
+                                    {{ request()->routeIs('admin.roles.*') ? 'bg-white/15 text-white font-bold' : 'hover:bg-white/10 text-white/80' }}">
+                                <i class="fas fa-user-shield w-5 text-center text-accent"></i>
+                                الأدوار والصلاحيات
+                            </a>
+
+                            <a href="{{ route('admin.permissions.index') }}"
+                                class="flex items-center gap-3 px-4 py-2 rounded-lg transition-all duration-300 text-sm
+                                    {{ request()->routeIs('admin.permissions.*') ? 'bg-white/15 text-white font-bold' : 'hover:bg-white/10 text-white/80' }}">
+                                <i class="fas fa-key w-5 text-center text-accent"></i>
+                                إدارة الصلاحيات
+                            </a>
+
+                            <a href="{{ route('admin.user-permissions.index') }}"
+                                class="flex items-center gap-3 px-4 py-2 rounded-lg transition-all duration-300 text-sm
+                                    {{ request()->routeIs('admin.user-permissions.*') ? 'bg-white/15 text-white font-bold' : 'hover:bg-white/10 text-white/80' }}">
+                                <i class="fas fa-user-lock w-5 text-center text-accent"></i>
+                                صلاحيات مباشرة للموظفين
+                            </a>
+                        @endcan
+                    </div>
+                </div>
+            @endcanany
+<a href="{{ route('signature-officers.index') }}"
+   class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/10 transition-all {{ request()->routeIs('signature-officers.*') ? 'bg-white/10' : '' }}">
+    <i class="fas fa-signature"></i> مسئولو التأشيرات
+</a>
         </nav>
 
         <div class="mt-auto border-t border-white/10 pt-6">

@@ -45,7 +45,7 @@
 
             <select name="priority" class="rounded-lg border-gray-300 text-sm">
                 <option value="">كل الأولويات</option>
-                @foreach (['عالية', 'متوسطة', 'منخفضة'] as $p)
+                @foreach (['سري', 'عاجل', 'هام وعاجل', 'عادي'] as $p)
                     <option value="{{ $p }}" @selected(($filters['priority'] ?? '') === $p)>{{ $p }}</option>
                 @endforeach
             </select>

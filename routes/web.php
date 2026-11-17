@@ -1,9 +1,15 @@
 <?php
 
+use App\Http\Controllers\Admin\PermissionController;
+use App\Http\Controllers\Admin\RoleController;
+use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\UserPermissionController;
+use App\Http\Controllers\SignatureOfficerController;
 use App\Http\Controllers\TaskAssignmentController;
 use App\Http\Controllers\TaskAssignmentDashboardController;
 use App\Http\Controllers\TaskEntityController;
 use App\Http\Controllers\TaskNotificationController;
+use App\Http\Controllers\TaskSignatureController;
 use App\Http\Controllers\TaskSourceController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -39,6 +45,10 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('tasks/{task}/document', [TaskAssignmentController::class, 'showDocument'])
         ->name('tasks.document');
+
+    // تأشيرات التكليفات
+    Route::post('tasks/{task}/signatures', [TaskSignatureController::class, 'store'])
+        ->name('tasks.signatures.store');
 
     Route::resource('tasks', TaskAssignmentController::class)
         ->parameters(['tasks' => 'task']);
@@ -80,6 +90,31 @@ Route::middleware(['auth'])->group(function () {
     Route::middleware('can:tasks.delete')->group(function () {
         Route::delete('task-entities/{taskEntity}', [TaskEntityController::class, 'destroy'])->name('task-entities.destroy');
     });
+
+    // -----------------------------------------------------------------
+    // إدارة المستخدمين والصلاحيات
+    // -----------------------------------------------------------------
+    Route::prefix('admin')->name('admin.')->group(function () {
+
+        // الأدوار والصلاحيات (تتطلب صلاحية roles.manage)
+        Route::middleware(['permission:roles.manage'])->group(function () {
+            Route::resource('roles', RoleController::class)->except(['show']);
+            Route::resource('permissions', PermissionController::class)->only(['index', 'store', 'destroy']);
+
+            Route::get('user-permissions', [UserPermissionController::class, 'index'])->name('user-permissions.index');
+            Route::get('user-permissions/{user}/edit', [UserPermissionController::class, 'edit'])->name('user-permissions.edit');
+            Route::put('user-permissions/{user}', [UserPermissionController::class, 'update'])->name('user-permissions.update');
+        });
+
+        // المستخدمون (إضافة/تعديل/حذف) - يتطلب users.manage
+        Route::middleware(['permission:users.manage'])->group(function () {
+            Route::resource('users', UserController::class)->except(['show']);
+        });
+    });
+
+        Route::resource('signature-officers', SignatureOfficerController::class)->except(['show']);
+    Route::patch('signature-officers/{signature_officer}/toggle', [SignatureOfficerController::class, 'toggle'])
+        ->name('signature-officers.toggle'); 
 });
 
 require __DIR__.'/auth.php';

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreTaskAssignmentRequest;
 use App\Http\Requests\UpdateTaskAssignmentRequest;
+use App\Models\SignatureOfficer;
 use App\Models\TaskAssignment;
 use App\Models\TaskEntity;
 use App\Models\TaskSource;
@@ -124,6 +125,8 @@ class TaskAssignmentController extends Controller
             'sources' => TaskSource::active()->orderBy('name')->get(),
             'entities' => TaskEntity::active()->orderBy('name')->get(),
             'staff' => User::orderBy('name')->get(),
+            'signatureOfficers' => SignatureOfficer::active()->orderBy('name')->get(),
+
         ]);
     }
 

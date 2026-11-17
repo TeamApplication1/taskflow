@@ -15,16 +15,24 @@ class RolesAndPermissionsSeeder extends Seeder
         app(PermissionRegistrar::class)->forgetCachedPermissions();
 
         // -------------------------------------------------------------
-        // الصلاحيات (Permissions) - موديول متابعة التكليفات
+        // الصلاحيات (Permissions)
         // -------------------------------------------------------------
-        $permissions = [
+
+        // موديول متابعة التكليفات
+        $taskPermissions = [
             'tasks.view',
             'tasks.create',
             'tasks.edit',
             'tasks.delete',
         ];
 
-        foreach ($permissions as $permission) {
+        // موديول إدارة المستخدمين والصلاحيات (للمسؤولين فقط)
+        $adminPermissions = [
+            'users.manage',
+            'roles.manage',
+        ];
+
+        foreach (array_merge($taskPermissions, $adminPermissions) as $permission) {
             Permission::firstOrCreate(['name' => $permission]);
         }
 
@@ -32,13 +40,13 @@ class RolesAndPermissionsSeeder extends Seeder
         // الأدوار (Roles) وربطها بالصلاحيات المناسبة
         // -------------------------------------------------------------
 
-        // 1) مشرف عام - كل الصلاحيات
+        // 1) مشرف عام - كل الصلاحيات (أدوار وإدارة مستخدمين)
         $admin = Role::firstOrCreate(['name' => 'مشرف عام']);
         $admin->syncPermissions(Permission::all());
 
         // 2) مسؤول التكليفات - كل صلاحيات التكليفات
         $assignmentManager = Role::firstOrCreate(['name' => 'مسؤول تكليفات']);
-        $assignmentManager->syncPermissions($permissions);
+        $assignmentManager->syncPermissions($taskPermissions);
 
         // 3) مدير - عرض فقط
         $manager = Role::firstOrCreate(['name' => 'مدير']);

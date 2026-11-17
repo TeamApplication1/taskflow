@@ -34,7 +34,7 @@ new #[Layout('layouts.guest')] class extends Component
                 <div class="form-header">
 
                     <h2>تسجيل الدخول</h2>
-                    <p>مرحباً بك في بوابة الشبكة الوطنية الموحدة</p>
+                    <p>مرحباً بك في بوابة Task Flow</p>
                 </div>
 
                 <x-auth-session-status

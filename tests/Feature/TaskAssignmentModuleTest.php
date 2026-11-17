@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\SignatureOfficer;
 use App\Models\TaskAssignment;
 use App\Models\TaskEntity;
 use App\Models\TaskSource;
@@ -98,7 +99,7 @@ class TaskAssignmentModuleTest extends TestCase
             'entity_id' => $entity->id,
             'assignee_id' => $staff->id,
             'description' => 'متابعة حالة البلاغ',
-            'priority' => 'عالية',
+            'priority' => 'عاجل',
             'deadline' => '2026-09-15',
         ]);
 
@@ -122,7 +123,7 @@ class TaskAssignmentModuleTest extends TestCase
             'task_number' => 'TA-2026-00005', 'received_date' => '2026-09-01',
             'source_id' => $source->id, 'entity_id' => $entity->id,
             'assignee_id' => $staff->id, 'created_by' => $manager->id,
-            'description' => 'حذف', 'priority' => 'منخفضة', 'deadline' => '2026-09-10',
+            'description' => 'حذف', 'priority' => 'عادي', 'deadline' => '2026-09-10',
         ]);
 
         $this->actingAs($staff)->delete(route('tasks.destroy', $task))->assertForbidden();
@@ -144,7 +145,7 @@ class TaskAssignmentModuleTest extends TestCase
             'entity_id' => $entity->id,
             'assignee_id' => $staff->id,
             'description' => 'وصف',
-            'priority' => 'عالية',
+            'priority' => 'عاجل',
             'deadline' => '2026-09-01',
         ])->assertSessionHasErrors('deadline');
     }
@@ -160,14 +161,14 @@ class TaskAssignmentModuleTest extends TestCase
             'task_number' => 'TA-2026-00001', 'received_date' => '2026-09-01',
             'source_id' => $source->id, 'entity_id' => $entity->id,
             'assignee_id' => $staffA->id, 'created_by' => $manager->id,
-            'description' => 'أ', 'priority' => 'عالية', 'deadline' => '2026-09-10',
+            'description' => 'أ', 'priority' => 'عاجل', 'deadline' => '2026-09-10',
         ]);
 
         TaskAssignment::create([
             'task_number' => 'TA-2026-00002', 'received_date' => '2026-09-01',
             'source_id' => $source->id, 'entity_id' => $entity->id,
             'assignee_id' => $staffB->id, 'created_by' => $manager->id,
-            'description' => 'ب', 'priority' => 'عالية', 'deadline' => '2026-09-10',
+            'description' => 'ب', 'priority' => 'عاجل', 'deadline' => '2026-09-10',
         ]);
 
         $this->assertSame(1, $staffA->visibleTasksQuery()->count());
@@ -184,7 +185,7 @@ class TaskAssignmentModuleTest extends TestCase
             'task_number' => 'TA-2026-00003', 'received_date' => '2026-08-01',
             'source_id' => $source->id, 'entity_id' => $entity->id,
             'assignee_id' => $staff->id, 'created_by' => $manager->id,
-            'description' => 'تأخر', 'priority' => 'عالية', 'deadline' => '2026-08-10',
+            'description' => 'تأخر', 'priority' => 'عاجل', 'deadline' => '2026-08-10',
             'status' => 'جاري التنفيذ',
         ]);
 
@@ -195,7 +196,7 @@ class TaskAssignmentModuleTest extends TestCase
             'task_number' => 'TA-2026-00004', 'received_date' => '2026-08-01',
             'source_id' => $source->id, 'entity_id' => $entity->id,
             'assignee_id' => $staff->id, 'created_by' => $manager->id,
-            'description' => 'خلص', 'priority' => 'عالية', 'deadline' => '2026-08-10',
+            'description' => 'خلص', 'priority' => 'عاجل', 'deadline' => '2026-08-10',
             'status' => 'تم التنفيذ', 'response_date' => '2026-08-09',
         ]);
 
@@ -237,14 +238,14 @@ class TaskAssignmentModuleTest extends TestCase
             'task_number' => 'TA-2026-00010', 'received_date' => '2026-09-01',
             'source_id' => $source->id, 'entity_id' => $entity->id,
             'assignee_id' => $user->id, 'created_by' => $other->id,
-            'description' => 'تكليف خاص بي', 'priority' => 'عالية', 'deadline' => '2026-09-10',
+            'description' => 'تكليف خاص بي', 'priority' => 'عاجل', 'deadline' => '2026-09-10',
         ]);
 
         TaskAssignment::create([
             'task_number' => 'TA-2026-00011', 'received_date' => '2026-09-01',
             'source_id' => $source->id, 'entity_id' => $entity->id,
             'assignee_id' => $other->id, 'created_by' => $other->id,
-            'description' => 'تكليف حد تاني', 'priority' => 'منخفضة', 'deadline' => '2026-09-10',
+            'description' => 'تكليف حد تاني', 'priority' => 'عادي', 'deadline' => '2026-09-10',
         ]);
 
         $this->actingAs($user)
@@ -265,7 +266,7 @@ class TaskAssignmentModuleTest extends TestCase
             'task_number' => 'TA-2026-00020', 'received_date' => '2026-09-01',
             'source_id' => $source->id, 'entity_id' => $entity->id,
             'assignee_id' => $staff->id, 'created_by' => $manager->id,
-            'description' => 'تفاصيل التكليف', 'priority' => 'عالية', 'deadline' => '2026-09-10',
+            'description' => 'تفاصيل التكليف', 'priority' => 'عاجل', 'deadline' => '2026-09-10',
         ]);
 
         $this->actingAs($manager)->get(route('tasks.show', $task))->assertOk()->assertSee('تفاصيل التكليف');
@@ -282,7 +283,7 @@ class TaskAssignmentModuleTest extends TestCase
             'task_number' => 'TA-2026-00030', 'received_date' => '2026-09-01',
             'source_id' => $source->id, 'entity_id' => $entity->id,
             'assignee_id' => $staff->id, 'created_by' => $manager->id,
-            'description' => 'تعديل', 'priority' => 'عالية', 'deadline' => '2026-09-10',
+            'description' => 'تعديل', 'priority' => 'عاجل', 'deadline' => '2026-09-10',
         ]);
 
         $this->actingAs($staff)->get(route('tasks.edit', $task))->assertOk();
@@ -299,7 +300,7 @@ class TaskAssignmentModuleTest extends TestCase
             'task_number' => 'TA-2026-00040', 'received_date' => '2026-09-01',
             'source_id' => $source->id, 'entity_id' => $entity->id,
             'assignee_id' => $staff->id, 'created_by' => $manager->id,
-            'description' => 'تحديث', 'priority' => 'عالية', 'deadline' => '2026-09-10',
+            'description' => 'تحديث', 'priority' => 'عاجل', 'deadline' => '2026-09-10',
         ]);
 
         // الموظف يحدّث الحالة بس
@@ -320,12 +321,12 @@ class TaskAssignmentModuleTest extends TestCase
         // الموظف لا يقدر يغيّر الأولوية: الحقل مش موجود في قواعد التحقق
         // فـ validated() بيتجاهله تمامًا (مش error، مجرد تجاهل)
         $this->actingAs($staff)->put(route('tasks.update', $task), [
-            'priority' => 'منخفضة',
+            'priority' => 'عادي',
             'status' => 'تم التنفيذ',
         ])->assertRedirect(route('tasks.index'))
             ->assertSessionHasNoErrors();
 
-        $this->assertSame('عالية', $task->fresh()->priority, 'priority should be unchanged for staff');
+        $this->assertSame('عاجل', $task->fresh()->priority, 'priority should be unchanged for staff');
         $this->assertDatabaseMissing('task_status_logs', [
             'task_assignment_id' => $task->id,
             'field_name' => 'priority',
@@ -352,5 +353,37 @@ class TaskAssignmentModuleTest extends TestCase
         $this->actingAs($user)->post(route('task-notifications.mark-all-read'))
             ->assertOk()
             ->assertJson(['ok' => true]);
+    }
+
+    public function test_manager_can_add_signature_to_task(): void
+    {
+        $manager = $this->makeUser('assignment_manager');
+        $staff = $this->makeUser('staff');
+        [$source, $entity] = $this->seedLookups();
+        $officer = SignatureOfficer::create(['name' => 'مسئول التأشيرة', 'is_active' => true]);
+
+        $task = TaskAssignment::create([
+            'task_number' => 'TA-2026-00050', 'received_date' => '2026-09-01',
+            'source_id' => $source->id, 'entity_id' => $entity->id,
+            'assignee_id' => $staff->id, 'created_by' => $manager->id,
+            'description' => 'تأشيرة', 'priority' => 'عاجل', 'deadline' => '2026-09-10',
+        ]);
+
+        $this->actingAs($manager)->post(route('tasks.signatures.store', $task), [
+            'signature_officer_id' => $officer->id,
+            'signature_text' => 'تم الاطلاع والموافقة',
+            'signature_date' => '2026-09-05',
+        ])->assertRedirect(route('tasks.edit', $task));
+
+        $this->assertDatabaseHas('task_signatures', [
+            'task_assignment_id' => $task->id,
+            'signature_officer_id' => $officer->id,
+            'signature_text' => 'تم الاطلاع والموافقة',
+        ]);
+
+        $this->actingAs($manager)->get(route('tasks.edit', $task))
+            ->assertOk()
+            ->assertSee('إضافة تأشيرة')
+            ->assertSee('تم الاطلاع والموافقة');
     }
 }

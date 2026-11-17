@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', 'الشبكة الوطنية للطوارئ - محافظة كفر الشيخ')</title>
+    <title>@yield('title', 'Task Flow')</title>
 
     <link rel="icon" type="image/png" href="{{ asset('assets/imgs/watania2.png') }}">
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap" rel="stylesheet">
@@ -39,12 +39,19 @@
                 </div>
             @endif
 
+            @if (session('error'))
+                <div class="mb-6 p-4 bg-red-50 border border-red-200 text-red-700 rounded-2xl font-bold flex items-center gap-3">
+                    <i class="fas fa-exclamation-circle text-xl"></i>
+                    {{ session('error') }}
+                </div>
+            @endif
+
             {{-- مكان محتوى كل صفحة --}}
             @yield('content')
         </main>
 
         <footer class="p-6 text-center text-slate-400 text-sm border-t border-slate-200 bg-white/50">
-            <p>جميع الحقوق محفوظة &copy; {{ date('Y') }} - الشبكة الوطنية للطوارئ بكفر الشيخ</p>
+            <p>جميع الحقوق محفوظة &copy; {{ date('Y') }} - Task Flow</p>
         </footer>
     </div>
 

@@ -22,7 +22,7 @@ class StoreTaskAssignmentRequest extends FormRequest
             'entity_id' => ['required', 'exists:task_entities,id'],
             'assignee_id' => ['required', 'exists:users,id'],
             'description' => ['required', 'string', 'max:5000'],
-            'priority' => ['required', 'in:عالية,متوسطة,منخفضة'],
+            'priority' => ['required', 'in:سري,عاجل,هام وعاجل,عادي'],
             'deadline' => ['required', 'date', 'after_or_equal:received_date'],
             'notes' => ['nullable', 'string', 'max:2000'],
         ];

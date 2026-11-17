@@ -32,6 +32,13 @@ class TaskAssignment extends Model
         'status_changed_at',
     ];
 
+    public const PRIORITIES = [
+        'سري',
+        'عاجل',
+        'هام وعاجل',
+        'عادي',
+    ];
+
     protected $casts = [
         'received_date' => 'date',
         'deadline' => 'date',
@@ -75,6 +82,11 @@ class TaskAssignment extends Model
     public function logs(): HasMany
     {
         return $this->hasMany(TaskStatusLog::class)->latest();
+    }
+
+    public function signatures(): HasMany
+    {
+        return $this->hasMany(TaskSignature::class)->latest();
     }
 
     // ------------------------------------------------------------

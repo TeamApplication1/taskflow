@@ -28,6 +28,17 @@
             </div>
         @endif
 
+        @if (session('success'))
+            <div class="mx-8 mt-6 p-4 bg-green-50 border border-green-200 rounded-xl text-green-700 text-sm flex items-center gap-3">
+                <i class="fas fa-check-circle"></i> {{ session('success') }}
+            </div>
+        @endif
+
+        {{-- فورم مستقل لإضافة التأشيرة (بره الفورم الرئيسي لتجنب تداخل الـ forms) --}}
+        <form id="signature-form-el" action="{{ route('tasks.signatures.store', $task) }}" method="POST" class="hidden">
+            @csrf
+        </form>
+
         <form method="POST" action="{{ route('tasks.update', $task) }}" class="p-8 space-y-8">
             @csrf
             @method('PUT')
@@ -107,9 +118,9 @@
                         <label class="block text-sm font-black text-slate-600">الأولوية <span class="text-red-500">*</span></label>
                         <select name="priority" required
                             class="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-accent/20 focus:border-accent outline-none transition-all">
-                            @foreach (['عالية', 'متوسطة', 'منخفضة'] as $p)
-                                <option value="{{ $p }}" @selected($task->priority === $p)>{{ $p }}</option>
-                            @endforeach
+                                    @foreach (['سري', 'عاجل', 'هام وعاجل', 'عادي'] as $p)
+                                        <option value="{{ $p }}" @selected($task->priority === $p)>{{ $p }}</option>
+                                    @endforeach
                         </select>
                     </div>
 
@@ -189,6 +200,84 @@
                 </div>
             </div>
 
+            {{-- إضافة تأشيرة --}}
+            <div class="p-6 bg-indigo-50 rounded-2xl border border-indigo-100 space-y-6">
+                <div class="flex items-center justify-between">
+                    <h4 class="font-black text-primary border-r-4 border-accent pr-3">التأشيرات</h4>
+                    <button type="button" id="add-signature-btn"
+                        class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-indigo-600 text-white font-bold hover:bg-indigo-700 transition-all shadow-sm">
+                        <i class="fas fa-plus"></i> إضافة تأشيرة
+                    </button>
+                </div>
+
+                @if ($task->signatures->count() > 0)
+                    <div class="space-y-4">
+                        @foreach ($task->signatures as $signature)
+                            <div class="p-4 bg-white rounded-xl border border-indigo-200 space-y-3">
+                                <div class="flex items-start justify-between">
+                                    <div>
+                                        <p class="font-bold text-slate-700">{{ $signature->officer?->name ?? '-' }}</p>
+                                        <p class="text-sm text-slate-500">تاريخ التأشيرة: {{ optional($signature->signature_date)->format('Y-m-d') }}</p>
+                                    </div>
+                                    <small class="text-slate-400">{{ $signature->created_at->format('Y-m-d H:i') }}</small>
+                                </div>
+                                <div class="p-3 bg-slate-50 rounded-lg">
+                                    <p class="text-slate-700 leading-relaxed whitespace-pre-line">{{ $signature->signature_text }}</p>
+                                </div>
+                                @if ($signature->note)
+                                    <p class="text-sm text-slate-600"><strong>ملاحظة:</strong> {{ $signature->note }}</p>
+                                @endif
+                            </div>
+                        @endforeach
+                    </div>
+                @else
+                    <p class="text-sm text-slate-500">لا توجد تأشيرات مضافة بعد</p>
+                @endif
+
+                <div id="signature-form" class="hidden p-4 bg-white rounded-xl border border-indigo-200 space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="space-y-2">
+                            <label class="block text-sm font-black text-slate-600">مسئول التأشيرة <span class="text-red-500">*</span></label>
+                            <select name="signature_officer_id" form="signature-form-el" required
+                                class="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all">
+                                <option value="">-- اختر مسئول التأشيرة --</option>
+                                @foreach ($signatureOfficers as $officer)
+        <option value="{{ $officer->id }}" @selected(old('signature_officer_id') == $officer->id)>
+            {{ $officer->name }}{{ $officer->title ? ' - ' . $officer->title : '' }}
+        </option>
+    @endforeach
+                            </select>
+                        </div>
+                        <div class="space-y-2">
+                            <label class="block text-sm font-black text-slate-600">تاريخ التأشيرة <span class="text-red-500">*</span></label>
+                            <input type="date" name="signature_date" form="signature-form-el" required
+                                value="{{ old('signature_date', now()->format('Y-m-d')) }}"
+                                class="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all">
+                        </div>
+                    </div>
+                    <div class="space-y-2 mt-4">
+                        <label class="block text-sm font-black text-slate-600">نص التأشيرة <span class="text-red-500">*</span></label>
+                        <textarea name="signature_text" form="signature-form-el" rows="3" placeholder="اكتب نص التأشيرة..." required
+                            class="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all">{{ old('signature_text') }}</textarea>
+                    </div>
+                    <div class="space-y-2 mt-4">
+                        <label class="block text-sm font-black text-slate-600">ملاحظة</label>
+                        <input type="text" name="note" form="signature-form-el" placeholder="ملاحظة إضافية (اختياري)"
+                            class="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all">
+                    </div>
+                    <div class="flex items-center justify-end gap-2 mt-4">
+                        <button type="button" id="cancel-signature-btn"
+                            class="px-4 py-2 rounded-xl bg-slate-100 text-slate-700 font-bold hover:bg-slate-200 transition-all">
+                            إلغاء
+                        </button>
+                        <button type="submit" form="signature-form-el"
+                            class="px-4 py-2 rounded-xl bg-indigo-600 text-white font-bold hover:bg-indigo-700 transition-all">
+                            حفظ التأشيرة
+                        </button>
+                    </div>
+                </div>
+            </div>
+
             <div class="pt-6 border-t border-slate-100 flex items-center justify-between gap-4">
                 <a href="{{ route('tasks.show', $task) }}"
                     class="px-6 py-4 rounded-2xl text-slate-500 font-bold hover:bg-slate-50 transition-all">
@@ -233,3 +322,28 @@
     });
 </script>
 @endpush
+
+
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const addBtn = document.getElementById('add-signature-btn');
+        const sigForm = document.getElementById('signature-form');
+        const cancelBtn = document.getElementById('cancel-signature-btn');
+        
+        if (addBtn) {
+            addBtn.addEventListener('click', function() {
+                sigForm.classList.remove('hidden');
+                addBtn.classList.add('hidden');
+            });
+        }
+        if (cancelBtn) {
+            cancelBtn.addEventListener('click', function() {
+                sigForm.classList.add('hidden');
+                addBtn.classList.remove('hidden');
+            });
+        }
+    });
+</script>
+@endpush
+
